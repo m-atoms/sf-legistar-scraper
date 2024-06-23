@@ -1,0 +1,8 @@
+bulk_scrape:
+  start_year: 2023
+  end_year: 2023
+  legislation_type: Ordinance
+
+update_scrape:
+  start_date: 06/01/2024
+  end_date: 06/30/2024
