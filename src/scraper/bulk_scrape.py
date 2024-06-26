@@ -4,13 +4,23 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import yaml
-#from src.database.db_operations import insert_legislation, create_tables
-#from src.scraper.utils import extract_details
+from src.database.db_operations import create_tables, store_in_database
+from src.scraper.utils import extract_file_details, print_legislation_details
+
+# configure webscraping driver to run headless
+def create_driver():
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(options=options)
+    return driver
 
 # scrape URLs for all legislation of {type} introduced during {year}
 def scrape_legislation_urls(start_year, end_year, legislation_type):
-    # Set up the Selenium WebDriver (assuming Chrome)
-    driver = webdriver.Chrome()
+    # Set up the Selenium WebDriver
+    driver = create_driver()
 
     try:
         # Open the target webpage
@@ -116,16 +126,62 @@ def scrape_legislation_urls(start_year, end_year, legislation_type):
 
         print(f"Number of {legislation_type}s introduced from 01/01/{start_year} to 12/31/{end_year}: {len(all_urls)}")
 
+        return all_urls
+
     finally:
         driver.quit()
 
 def bulk_scrape(start_year, end_year, legislation_type):
-    #create_tables()
+    # STEP 0: Create db tables
+    create_tables()
 
     # STEP 1: Scrape all legislation file URLs in date range
     legislation_urls = scrape_legislation_urls(start_year, end_year, legislation_type)
 
+    # init scrape counter and timers
+    scraped = 0
+    start_time = time.time()
+    scrape_times = []
+
     # STEP 2: process URLS and extract info from each file
+    driver = create_driver()
+
+    try:
+        for url in legislation_urls:
+            # init file scrape timer
+            file_start_time = time.time()
+            
+            driver.get(url)
+            driver.implicitly_wait(10)
+            details = extract_file_details(driver)
+            details['url'] = url
+            store_in_database(details)
+
+            # capture script telemetry
+            scraped += 1
+            file_end_time = time.time()
+            scrape_times.append(file_end_time - file_start_time)
+
+            time.sleep(2)
+
+            # print one file to test
+            #print_legislation_details(details['file_number'])
+            #break
+    finally:
+        driver.quit()
+
+    # STEP 3: Print script telemetry and summary
+    end_time = time.time()
+    total_time = end_time - start_time
+    min_time = min(scrape_times) if scrape_times else 0
+    max_time = max(scrape_times) if scrape_times else 0
+    avg_time = sum(scrape_times) / len(scrape_times) if scrape_times else 0
+
+    print(f'Scraped {scraped} {legislation_type}s introduced between 01/01/{start_year} and 12/31/{end_year}')
+    print(f'Total time taken: {total_time:.2f} seconds')
+    print(f'Min time per scrape: {min_time:.2f} seconds')
+    print(f'Max time per scrape: {max_time:.2f} seconds')
+    print(f'Average time per scrape: {avg_time:.2f} seconds')
 
 if __name__ == "__main__":
     with open('config/config.yaml', 'r') as f:
