@@ -11,7 +11,7 @@ def create_tables():
     c.execute('''CREATE TABLE IF NOT EXISTS legislation
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, file_number TEXT, type TEXT, introduced TEXT, 
                   on_agenda TEXT, enactment_date TEXT, name TEXT, status TEXT, in_control TEXT, 
-                  final_action TEXT, enactment_number TEXT, title TEXT, sponsors TEXT, url TEXT)''')
+                  final_action TEXT, enactment_number TEXT, title TEXT, sponsors TEXT, related_files TEXT, url TEXT)''')
 
     # Create history table with a foreign key to legislation
     c.execute('''CREATE TABLE IF NOT EXISTS history
@@ -29,11 +29,11 @@ def store_in_database(data):
     # Insert data into legislation table
     c.execute('''INSERT INTO legislation (file_number, type, introduced, on_agenda, enactment_date, 
                                           name, status, in_control, final_action, enactment_number, 
-                                          title, sponsors, url) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', 
+                                          title, sponsors, related_files, url) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', 
                  (data['file_number'], data['type'], data['introduced'], data['on_agenda'], data['enactment_date'],
                   data['name'], data['status'], data['in_control'], data['final_action'], data['enactment_number'],
-                  data['title'], data['sponsors'], data['url']))
+                  data['title'], data['sponsors'], data['related_files'], data['url']))
 
     # Get the id of the newly inserted legislation record
     legislation_id = c.lastrowid

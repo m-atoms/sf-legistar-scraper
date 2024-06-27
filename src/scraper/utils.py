@@ -16,8 +16,14 @@ def extract_file_details(driver):
     details['final_action'] = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblPassed2").text
     details['enactment_number'] = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblEnactmentNumber2").text
     details['title'] = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblTitle2").text
-    sponsors = driver.find_elements(By.CSS_SELECTOR, "#ctl00_ContentPlaceHolder1_lblSponsors2 a")
-    details['sponsors'] = ', '.join([sponsor.text for sponsor in sponsors])
+
+    # Extract sponsors
+    sponsors = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblSponsors2")
+    sponsors_text = sponsors.text
+    sponsors = [sponsor.strip() for sponsor in sponsors_text.split(',')]
+    details['sponsors'] = ', '.join(sponsors)
+
+    # Extract related_files
     related_files = driver.find_elements(By.CSS_SELECTOR, "#ctl00_ContentPlaceHolder1_lblRelatedFiles2 a")
     details['related_files'] = ', '.join([related_file.text for related_file in related_files])
     
@@ -76,7 +82,8 @@ def print_legislation_details(file_number, db_name='data/legislation.db'):
     print(f"Enactment Number: {legislation[10]}")
     print(f"Title: {legislation[11]}")
     print(f"Sponsors: {legislation[12]}")
-    print(f"URL: {legislation[13]}")
+    print(f"Related Files: {legislation[13]}")
+    print(f"URL: {legislation[14]}")
 
     # Print legislation history
     print("\nLegislation History:")
