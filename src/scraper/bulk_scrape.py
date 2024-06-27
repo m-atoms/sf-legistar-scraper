@@ -148,6 +148,7 @@ def bulk_scrape(start_year, end_year, legislation_type):
             # init file scrape timer
             file_start_time = time.time()
             
+            # scrape file and store in db
             driver.get(url)
             driver.implicitly_wait(10)
             details = extract_file_details(driver)
@@ -158,6 +159,7 @@ def bulk_scrape(start_year, end_year, legislation_type):
             scraped += 1
             file_end_time = time.time()
             scrape_times.append(file_end_time - file_start_time)
+            print(f" | file srape time: {(file_end_time - file_start_time):.2f} | files scraped: {scraped}", end="\r")
 
             time.sleep(2)
 
