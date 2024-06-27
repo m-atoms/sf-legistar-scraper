@@ -94,9 +94,6 @@ def scrape_legislation_urls(start_year, end_year, legislation_type):
         ################################
         wait.until(EC.presence_of_all_elements_located((By.ID, 'ctl00_ContentPlaceHolder1_menuMain')))
 
-        # Find all rows in the table
-        #rows = driver.find_elements(By.XPATH, "//tr[@class='rgRow' or @class='rgAltRow']")
-
         # Helper function to extract URLs from the current page
         def extract_urls():
             rows = driver.find_elements(By.XPATH, "//tr[@class='rgRow' or @class='rgAltRow']")
