@@ -1,6 +1,6 @@
 bulk_scrape:
-  start_year: 2023
-  end_year: 2023
+  start_year: 2015
+  end_year: 2024
   legislation_type: Ordinance
 
 update_scrape:

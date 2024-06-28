@@ -132,8 +132,13 @@ def bulk_scrape(start_year, end_year, legislation_type):
     # STEP 0: Create db tables
     create_tables()
 
-    # STEP 1: Scrape all legislation file URLs in date range
-    legislation_urls = scrape_legislation_urls(start_year, end_year, legislation_type)
+    # STEP 1: Scrape all legislation file URLs in date range, one year at a time (to avoid legistar pagination problems)
+    legislation_urls = []
+    for year in range(start_year, end_year + 1):
+        year_legislation_urls = scrape_legislation_urls(year, year, legislation_type)
+        legislation_urls.extend(year_legislation_urls)
+
+    print(f"Number of {legislation_type}s introduced from 01/01/{start_year} to 12/31/{end_year}: {len(legislation_urls)}")
 
     # init script telemetry
     scraped = 0
