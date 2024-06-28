@@ -135,10 +135,11 @@ def bulk_scrape(start_year, end_year, legislation_type):
     # STEP 1: Scrape all legislation file URLs in date range
     legislation_urls = scrape_legislation_urls(start_year, end_year, legislation_type)
 
-    # init scrape counter and timers
+    # init script telemetry
     scraped = 0
     start_time = time.time()
     scrape_times = []
+    scraped_files = []
 
     # STEP 2: process URLS and extract info from each file
     driver = create_driver()
@@ -158,6 +159,7 @@ def bulk_scrape(start_year, end_year, legislation_type):
             # capture script telemetry
             scraped += 1
             file_end_time = time.time()
+            scraped_files.append(details['file_number'])
             scrape_times.append(file_end_time - file_start_time)
             print(f" | file srape time: {(file_end_time - file_start_time):.2f} | files scraped: {scraped}", end="\r")
 
@@ -179,7 +181,7 @@ def bulk_scrape(start_year, end_year, legislation_type):
     print(f'Scraped {scraped} {legislation_type}s introduced between 01/01/{start_year} and 12/31/{end_year}')
     print(f'Total time taken: {total_time:.2f} seconds')
     print(f'Min time per scrape: {min_time:.2f} seconds')
-    print(f'Max time per scrape: {max_time:.2f} seconds')
+    print(f'Max time per scrape: {max_time:.2f} seconds (file: {scraped_files[scrape_times.index(max_time)]})')
     print(f'Average time per scrape: {avg_time:.2f} seconds')
 
 if __name__ == "__main__":
