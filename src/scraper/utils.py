@@ -7,7 +7,7 @@ def extract_file_details(driver):
     
     # Extract legislation file details
     details['file_number'] = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblFile2").text
-    print(f"scraping file: {details['file_number']}", end="")
+    print(f"\033[Kscraping file: {details['file_number']}", end="")
     details['type'] = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblType2").text
     details['introduced'] = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblIntroduced2").text
     details['on_agenda'] = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_lblOnAgenda2").text
